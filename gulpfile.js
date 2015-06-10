@@ -30,6 +30,8 @@ gulp.task('dev', ['js', 'scss', 'bsync'], function () {
 
 gulp.task('js', function () {
     return glob(config.js.source_glob, { cwd: config.source_directory }, function(err, files) {
+        var error = false;
+
         var tasks = files.map(function(entry) {
             return browserify({
                     entries: [config.source_directory + '/' + entry],
@@ -37,10 +39,20 @@ gulp.task('js', function () {
                     debug: true
                 })
                 .bundle()
+                .on('error', function (error) {
+                    console.log(error.message);
+                    console.log(error.loc);
+                    console.log(error.codeFrame);
+
+                    if (!options.debug) {
+                        process.exit();
+                    }
+                })
                 .pipe(source(entry))
                 .pipe(gulp.dest(config.build_directory, { base: config.source_directory }))
                 .pipe(reload({ stream: true }));
-            });
+        });
+
         return es.merge.apply(null, tasks);
     })
 });
@@ -60,6 +72,7 @@ gulp.task('bsync', function () {
     browserSync.init({
         server: {
             baseDir: './'
-        }
+        },
+        open: false
     });
 });
