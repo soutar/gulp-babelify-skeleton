@@ -21,6 +21,8 @@ var sass        = require('gulp-sass');
 var minifycss   = require('gulp-minify-css');
 
 gulp.task('dev', ['js', 'scss', 'bsync'], function () {
+    options.debug = true;
+    
     gulp.watch(config.source_directory + '/js/**/*', ['js']);
     gulp.watch(config.source_directory + '/scss/**/*', ['scss']);
     gulp.watch('./index.html', function () {
